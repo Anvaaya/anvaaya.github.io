@@ -770,7 +770,7 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(25,200,230,.55);o
   var WHATSAPP = "917097050533";
   /* Paste a form service address here and requests are delivered straight
      to your inbox instead of opening the visitor's email app. */
-  var FORM_ENDPOINT = "https://formsubmit.co/ajax/info@anvaaya.co.in";
+  var FORM_ENDPOINT = "https://formsubmit.co/info@anvaaya.co.in";
 
   var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches,
       fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -908,6 +908,10 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(25,200,230,.55);o
       "\n\nWhat we want built:\n" + val("fM") + "\n\nDummy data: " + ([].slice.call(fileIn.files || []).map(function (f) { return f.name; }).join(", ") || "to follow") + "\n";
   }
   if (FORM_ENDPOINT) note.textContent = "Your request goes straight to the Anvaaya team.";
+  if (/[?&]sent=1/.test(location.search)) {
+    say("Request sent. We will reply to the email you gave.");
+    try { history.replaceState(null, "", location.pathname + "#start"); } catch (e) {}
+  }
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     if (!check()) return;
@@ -916,26 +920,21 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(25,200,230,.55);o
       files.forEach(function (f) { total += f.size; });
       if (files.length > 5) { say("Attach up to 5 files. Send the rest on WhatsApp or by email."); return; }
       if (total > 5 * 1024 * 1024) { say("The files come to more than 5 MB. Attach fewer, or email them to info@anvaaya.co.in."); return; }
-      var b = document.getElementById("fS"); b.disabled = true; say("Sending your request.");
-      var fd = new FormData();
-      fd.append("_subject", "New free-month request: " + val("fN") + (val("fC") ? " (" + val("fC") + ")" : ""));
-      fd.append("_template", "table");
-      fd.append("_captcha", "false");
-      fd.append("_replyto", val("fE"));
-      fd.append("Name", val("fN"));
-      fd.append("Company", val("fC") || "-");
-      fd.append("email", val("fE"));
-      fd.append("Phone", val("fP") || "-");
-      fd.append("Kind of work", val("fK"));
-      fd.append("What they want built", val("fM"));
-      fd.append("Files attached", files.length ? files.map(function (f) { return f.name; }).join(", ") : "none");
-      files.forEach(function (f, i) { fd.append(i ? "attachment" + (i + 1) : "attachment", f, f.name); });
-      fetch(FORM_ENDPOINT, { method: "POST", headers: { "Accept": "application/json" }, body: fd })
-        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) {
-          if (!r.ok || String(j.success) !== "true") throw 0; }); })
-        .then(function () { form.reset(); showFiles(); say("Request sent. We will reply to the email you gave."); })
-        .catch(function () { say("That did not send. Please message us on WhatsApp or email info@anvaaya.co.in."); })
-        .then(function () { b.disabled = false; });
+      var names = { fN: "Name", fC: "Company", fE: "email", fP: "Phone", fK: "Kind of work", fM: "What they want built" };
+      Object.keys(names).forEach(function (id) { document.getElementById(id).name = names[id]; });
+      fileIn.name = "attachment";
+      function hid(n, v) { var i = document.createElement("input"); i.type = "hidden"; i.name = n; i.value = v; form.appendChild(i); }
+      hid("_subject", "New free-month request: " + val("fN") + (val("fC") ? " (" + val("fC") + ")" : ""));
+      hid("_template", "table");
+      hid("_captcha", "false");
+      hid("_replyto", val("fE"));
+      hid("_next", location.origin + location.pathname + "?sent=1#start");
+      hid("Files attached", files.length ? files.map(function (f) { return f.name; }).join(", ") : "none");
+      if (!val("fC")) document.getElementById("fC").value = "-";
+      if (!val("fP")) document.getElementById("fP").value = "-";
+      form.action = FORM_ENDPOINT; form.method = "POST"; form.enctype = "multipart/form-data";
+      document.getElementById("fS").disabled = true; say("Sending your request.");
+      HTMLFormElement.prototype.submit.call(form);
       return;
     }
     window.open("https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(text()), "_blank", "noopener");
