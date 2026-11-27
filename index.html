@@ -922,7 +922,12 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(25,200,230,.55);o
       if (total > 5 * 1024 * 1024) { say("The files come to more than 5 MB. Attach fewer, or email them to info@anvaaya.co.in."); return; }
       var names = { fN: "Name", fC: "Company", fE: "email", fP: "Phone", fK: "Kind of work", fM: "What they want built" };
       Object.keys(names).forEach(function (id) { document.getElementById(id).name = names[id]; });
-      fileIn.name = "attachment";
+      fileIn.removeAttribute("name");
+      files.forEach(function (f, i) {
+        var dt = new DataTransfer(); dt.items.add(f);
+        var fi = document.createElement("input"); fi.type = "file"; fi.hidden = true;
+        fi.name = i ? "attachment" + (i + 1) : "attachment"; fi.files = dt.files; form.appendChild(fi);
+      });
       function hid(n, v) { var i = document.createElement("input"); i.type = "hidden"; i.name = n; i.value = v; form.appendChild(i); }
       hid("_subject", "New free-month request: " + val("fN") + (val("fC") ? " (" + val("fC") + ")" : ""));
       hid("_template", "table");
