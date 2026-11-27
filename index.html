@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Anvaaya | AI, integrations and automation, built on your systems</title>
+<meta name="description" content="Anvaaya builds AI agents, integrations and automation on top of your ERP, email, spreadsheets and APIs. Bring what you want built and your dummy data, and see the results free for one month.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Anvaaya">
+<meta property="og:title" content="Anvaaya | AI, integrations and automation, built on your systems">
+<meta property="og:description" content="Bring what you want built and your dummy data. See the results, free for one month.">
+<meta property="og:url" content="https://anvaaya.co.in/">
+<meta property="og:image" content="https://anvaaya.co.in/share.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --night:#070B19; --night-2:#0F1630; --night-rule:#242E55; --night-ink:#F3F5FF; --night-body:#AAB5D8;
+  --paper:#F5F7FC; --surface:#FFFFFF; --sunk:#EBEFF8;
+  --ink:#0B1224; --body:#434D68; --muted:#69738F; --rule:#DCE2EE;
+  --brand:#3D5AFE; --cyan:#19C8E6; --violet:#7C4DFF; --brand-ink:#FFFFFF;
+  --ok:#0F7F58; --no:#B4540A;
+  --display:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+  --sans:"IBM Plex Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#090E1E; --surface:#111833; --sunk:#0C1227;
+    --ink:#F3F5FF; --body:#B6C0DE; --muted:#8B96BA; --rule:#242E55;
+    --brand:#7F95FF; --ok:#4FD1A1; --no:#F0A560;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#090E1E; --surface:#111833; --sunk:#0C1227;
+  --ink:#F3F5FF; --body:#B6C0DE; --muted:#8B96BA; --rule:#242E55;
+  --brand:#7F95FF; --ok:#4FD1A1; --no:#F0A560;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(78px + env(safe-area-inset-top,0px))}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--sans);font-size:17px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--night)}
+img{max-width:100%;display:block}
+p{margin:0}
+h1,h2,h3{font-family:var(--display);color:var(--ink);margin:0;font-weight:700;letter-spacing:-.025em}
+h2{font-size:clamp(30px,4vw,48px);line-height:1.08;letter-spacing:-.035em;font-weight:800}
+h3{font-size:21px;line-height:1.25}
+a{color:var(--brand)}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:2px;border-radius:6px}
+[hidden]{display:none!important}
+.wrap{max-width:1160px;margin-inline:auto;
+  padding-left:max(clamp(18px,4vw,40px),env(safe-area-inset-left,0px));
+  padding-right:max(clamp(18px,4vw,40px),env(safe-area-inset-right,0px))}
+.sec{padding-block:clamp(64px,9vw,120px)}
+.sec.sunk{background:var(--sunk)}
+.lede{font-size:clamp(18px,1.7vw,20px);max-width:58ch;margin-top:16px}
+.skip{position:absolute;left:-9999px}
+.skip:focus{left:12px;top:12px;z-index:50;background:#fff;color:#0B1224;padding:10px 14px;border-radius:8px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;border-radius:12px;
+  font:700 16px/1 var(--display);letter-spacing:-.005em;text-decoration:none;border:1px solid transparent;cursor:pointer}
+.btn-white{background:#fff;color:#0B1224}
+.btn-white:hover{background:#E6EBFF}
+.btn-ghost{border-color:rgba(170,181,216,.35);color:var(--night-ink);background:rgba(255,255,255,.03)}
+.btn-ghost:hover{border-color:var(--night-ink)}
+.btn-brand{background:linear-gradient(135deg,#3D5AFE,#7C4DFF);color:#fff}
+.btn-brand:hover{filter:brightness(1.08)}
+.btn-line{border-color:var(--rule);color:var(--ink);background:var(--surface)}
+.btn-line:hover{border-color:var(--muted)}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--night);border-bottom:1px solid var(--night-rule)}
+.nav .wrap{display:flex;align-items:center;gap:28px;min-height:68px}
+.mark{display:inline-flex;align-items:center;gap:11px;text-decoration:none;color:var(--night-ink);
+  font:800 23px/1 var(--display);letter-spacing:-.03em}
+.mark svg{width:32px;height:32px;flex:none}
+.nav ul{display:flex;gap:28px;list-style:none;margin:0 0 0 auto;padding:0}
+.nav ul a{color:var(--night-body);text-decoration:none;font-size:15.5px;font-weight:500}
+.nav ul a:hover{color:var(--night-ink)}
+.nav .btn{min-height:42px;padding:0 18px;font-size:15px;border-radius:10px}
+@media (max-width:900px){.nav ul{display:none}.nav .btn{margin-left:auto}}
+
+/* hero */
+.hero{position:relative;background:var(--night);color:var(--night-body);overflow:hidden;isolation:isolate}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;
+  background-image:linear-gradient(rgba(120,140,255,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(120,140,255,.09) 1px,transparent 1px);
+  background-size:56px 56px;
+  -webkit-mask-image:radial-gradient(75% 70% at 70% 45%,#000 0%,transparent 78%);mask-image:radial-gradient(75% 70% at 70% 45%,#000 0%,transparent 78%)}
+.hero::after{content:"";position:absolute;z-index:-1;inset:0;
+  background:radial-gradient(38% 46% at 74% 48%,rgba(61,90,254,.42),transparent 70%),
+             radial-gradient(26% 30% at 86% 28%,rgba(25,200,230,.20),transparent 70%),
+             radial-gradient(30% 34% at 60% 78%,rgba(124,77,255,.22),transparent 70%)}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:clamp(20px,3vw,40px);
+  align-items:center;padding-block:clamp(48px,7vw,96px)}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:8px 14px 8px 10px;border-radius:999px;text-decoration:none;
+  background:rgba(61,90,254,.16);border:1px solid rgba(127,149,255,.45);color:#DCE3FF;font-size:14.5px;font-weight:500}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 4px rgba(25,200,230,.2)}
+.pill:hover{border-color:#DCE3FF}
+.hero h1{color:var(--night-ink);font-size:clamp(38px,5.2vw,66px);line-height:1.03;letter-spacing:-.045em;font-weight:800;margin-top:22px}
+.hero .sub{font-size:clamp(18px,1.65vw,20.5px);max-width:50ch;margin-top:22px}
+.hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+@media (max-width:940px){.hero .wrap{grid-template-columns:1fr}}
+
+/* 3D orbit: an agent at the centre, the things it connects circling it */
+.scene{position:relative;height:33em;perspective:64em;font-size:clamp(11px,1.2vw,16.5px);--tilt:59deg;--r1:9.4em;--r2:15.6em}
+@media (max-width:940px){.scene{font-size:clamp(9.6px,2.7vw,15px);height:29em;--r1:7.8em;--r2:12.8em}}
+.world{position:absolute;inset:0;transform-style:preserve-3d;
+  transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .25s ease-out}
+.plane{position:absolute;left:50%;top:52%;width:0;height:0;transform-style:preserve-3d;transform:rotateX(var(--tilt))}
+.ring{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;animation:spin var(--d) linear infinite}
+.ring.rev{animation-direction:reverse}
+.ring::before{content:"";position:absolute;left:calc(-1*var(--r));top:calc(-1*var(--r));width:calc(2*var(--r));height:calc(2*var(--r));
+  border-radius:50%;border:1px dashed rgba(140,158,255,.42)}
+.spoke{position:absolute;left:0;top:-.5px;width:var(--r);height:1px;transform-origin:0 50%;transform:rotateZ(var(--a));
+  background:linear-gradient(90deg,rgba(25,200,230,0) 18%,rgba(25,200,230,.55))}
+.spoke i{position:absolute;top:-.19em;left:0;width:.42em;height:.42em;border-radius:50%;background:#7FE9FF;
+  box-shadow:0 0 .7em #19C8E6;animation:flow 2.8s linear infinite;animation-delay:var(--dl,0s)}
+.sat{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;transform:rotateZ(var(--a)) translateX(var(--r))}
+.up{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;animation:face var(--d) linear infinite}
+.ring.rev .up{animation-direction:reverse}
+.chip{position:absolute;left:0;top:0;transform:translate(-50%,-50%);display:flex;align-items:center;gap:.55em;white-space:nowrap;
+  padding:.6em .95em;border-radius:.85em;color:#F3F5FF;font:600 1em/1 var(--display);
+  background:linear-gradient(180deg,rgba(28,38,78,.96),rgba(14,20,44,.96));border:1px solid rgba(140,158,255,.5);
+  box-shadow:0 .9em 2em rgba(2,5,16,.55),inset 0 1px 0 rgba(255,255,255,.12)}
+.chip svg{width:1.15em;height:1.15em;flex:none;stroke:#7FE9FF;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.chip.hot{border-color:rgba(127,233,255,.8);background:linear-gradient(180deg,rgba(30,52,120,.97),rgba(18,28,70,.97))}
+@keyframes spin{to{transform:rotateZ(360deg)}}
+@keyframes face{from{transform:rotateZ(calc(-1*var(--a))) rotateX(calc(-1*var(--tilt)))}
+  to{transform:rotateZ(calc(-1*var(--a) - 360deg)) rotateX(calc(-1*var(--tilt)))}}
+@keyframes flow{0%{transform:translateX(1.5em);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(var(--r));opacity:0}}
+/* the core: a slowly turning cube */
+.core{position:absolute;left:50%;top:52%;width:0;height:0;transform-style:preserve-3d;transform:translateY(-3.2em)}
+.cube{position:absolute;left:-3.4em;top:-3.4em;width:6.8em;height:6.8em;transform-style:preserve-3d;animation:tumble 22s linear infinite}
+.cube b{position:absolute;inset:0;border-radius:.9em;border:1px solid rgba(255,255,255,.55);
+  background:linear-gradient(135deg,rgba(61,90,254,.92),rgba(25,200,230,.88));
+  box-shadow:inset 0 0 2.2em rgba(255,255,255,.28)}
+.cube b:nth-child(1){transform:translateZ(3.4em)}
+.cube b:nth-child(2){transform:rotateY(180deg) translateZ(3.4em)}
+.cube b:nth-child(3){transform:rotateY(90deg) translateZ(3.4em);background:linear-gradient(135deg,rgba(124,77,255,.92),rgba(61,90,254,.9))}
+.cube b:nth-child(4){transform:rotateY(-90deg) translateZ(3.4em);background:linear-gradient(135deg,rgba(124,77,255,.92),rgba(61,90,254,.9))}
+.cube b:nth-child(5){transform:rotateX(90deg) translateZ(3.4em);background:linear-gradient(135deg,rgba(150,225,255,.95),rgba(61,90,254,.9))}
+.cube b:nth-child(6){transform:rotateX(-90deg) translateZ(3.4em);background:rgba(20,30,90,.9)}
+.cube b svg{position:absolute;inset:22%;width:56%;height:56%}
+@keyframes tumble{from{transform:rotateX(-22deg) rotateY(0)}to{transform:rotateX(-22deg) rotateY(360deg)}}
+.glow{position:absolute;left:-7em;top:-7em;width:14em;height:14em;border-radius:50%;
+  background:radial-gradient(circle,rgba(61,90,254,.55),rgba(25,200,230,.16) 55%,transparent 70%)}
+.corelabel{position:absolute;left:50%;top:52%;transform:translate(-50%,-10.6em);z-index:2;white-space:nowrap;
+  padding:.5em 1em;border-radius:999px;background:#fff;color:#0B1224;font:800 1em/1 var(--display);
+  box-shadow:0 .6em 1.6em rgba(2,5,16,.5)}
+@media (prefers-reduced-motion:reduce){.ring,.up,.cube,.spoke i{animation-play-state:paused}.spoke i{display:none}}
+
+/* proof */
+.proof{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-bottom:1px solid var(--rule)}
+.proof div{padding:30px 24px 30px 0}
+.proof div+div{padding-left:28px;border-left:1px solid var(--rule)}
+.proof b{display:block;font:800 clamp(34px,4.2vw,50px)/1 var(--display);color:var(--ink);letter-spacing:-.04em}
+.proof span{display:block;margin-top:8px;font-size:15.5px;line-height:1.4}
+@media (max-width:680px){.proof{grid-template-columns:1fr}.proof div+div{padding-left:0;border-left:0;border-top:1px solid var(--rule)}
+  .proof div{padding:20px 0;display:grid;grid-template-columns:86px 1fr;align-items:center}.proof span{margin-top:0}}
+
+/* connectors, APIs, MCP: three cards that tilt toward the pointer */
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin-top:40px;perspective:1400px}
+.tcard{position:relative;border-radius:20px;padding:28px 26px 26px;background:var(--night);color:var(--night-body);
+  border:1px solid var(--night-rule);transform-style:preserve-3d;
+  transform:rotateX(var(--tx,0deg)) rotateY(var(--ty,0deg));transition:transform .18s ease-out;
+  box-shadow:0 24px 50px -22px rgba(11,18,36,.55);overflow:hidden}
+.tcard::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(60% 50% at var(--mx,80%) var(--my,0%),rgba(61,90,254,.5),transparent 70%)}
+.tcard>*{position:relative}
+.ico{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#3D5AFE,#19C8E6);box-shadow:0 12px 26px -8px rgba(61,90,254,.8),inset 0 1px 0 rgba(255,255,255,.4)}
+.ico svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tcard h3{color:var(--night-ink);font-size:24px;margin-top:22px;letter-spacing:-.03em}
+.tcard p{margin-top:10px;font-size:16.5px}
+.tags{list-style:none;display:flex;flex-wrap:wrap;gap:7px;margin:20px 0 0;padding:0}
+.tags li{font-size:13.5px;font-weight:500;color:#DCE3FF;padding:5px 10px;border-radius:8px;
+  background:rgba(127,149,255,.14);border:1px solid rgba(127,149,255,.3)}
+@media (max-width:900px){.three{grid-template-columns:1fr}}
+
+
+/* SARATHI: the flagship, shown in its own colours */
+.sar{position:relative;background:#04080F;color:#9DB4CA;overflow:hidden;isolation:isolate}
+.sar{border-top:1px solid transparent;border-image:linear-gradient(90deg,transparent,rgba(124,77,255,.55) 30%,rgba(159,233,255,.5) 70%,transparent) 1}
+.sar::before{content:"";position:absolute;z-index:-1;inset:0;
+  background:radial-gradient(46% 36% at 78% 12%,rgba(79,209,255,.20),transparent 70%),
+             radial-gradient(40% 30% at 8% 4%,rgba(61,90,254,.26),transparent 70%),
+             radial-gradient(50% 30% at 50% 62%,rgba(79,209,255,.10),transparent 70%)}
+.sar-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px 40px}
+.sar-act{display:flex;flex-wrap:wrap;gap:12px}
+.sar-act button svg{width:20px;height:20px;margin-left:10px;stroke:#0B1224;fill:none;stroke-width:2.400;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.sar-act button[aria-expanded="true"] svg{transform:rotate(180deg)}
+#sarMore{margin-top:clamp(36px,5vw,60px);padding-top:clamp(36px,5vw,60px);border-top:1px solid #16314A}
+.sar.sec{padding-block:clamp(48px,6vw,80px)}
+#sarMore .sar-sub{margin-top:0;font-size:clamp(18px,1.800vw,21px);color:#C9DBEA}
+.sar-top{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(28px,5vw,72px);align-items:center}
+.badge{display:inline-flex;align-items:center;gap:9px;padding:7px 14px;border-radius:999px;font-size:14.500px;font-weight:600;
+  color:#BFEFFF;background:rgba(79,209,255,.10);border:1px solid rgba(79,209,255,.42)}
+.badge::before{content:"";width:8px;height:8px;border-radius:50%;background:#4FD1FF;box-shadow:0 0 10px #4FD1FF}
+.sar h2{color:#fff;font-size:clamp(46px,7.400vw,98px);line-height:1;letter-spacing:.06em;margin-top:22px;font-weight:800}
+.sar-tag{font:700 clamp(22px,2.600vw,30px)/1.2 var(--display);color:#EAF6FF;letter-spacing:-.02em;margin-top:18px}
+.sar-sub{font-size:clamp(17px,1.600vw,19px);max-width:54ch;margin-top:16px}
+.sar .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.talk{border:1px solid #16314A;border-radius:24px;padding:30px 26px 26px;text-align:center;
+  background:linear-gradient(180deg,rgba(13,34,54,.72),rgba(5,9,15,.72));box-shadow:0 40px 80px -40px rgba(79,209,255,.35)}
+.sorb{position:relative;width:190px;height:190px;margin:0 auto}
+.sorb i{position:absolute;inset:0;border-radius:50%;border:2px solid transparent}
+.sorb .r1{border-top-color:var(--oc,#4FD1FF);border-bottom-color:var(--oc,#4FD1FF);animation:ospin 9s linear infinite;opacity:.7}
+.sorb .r2{inset:18px;border-left-color:var(--oc,#4FD1FF);border-right-color:#1D6F8F;animation:ospin 6s linear infinite reverse;opacity:.8}
+.sorb .r3{inset:38px;border:1px dashed #2A6A8A;animation:ospin 20s linear infinite}
+.sorb b{position:absolute;inset:60px;border-radius:50%;
+  background:radial-gradient(circle at 50% 45%,#E9FBFF 0%,#4FD1FF 28%,#0B4E6E 70%,transparent 72%);
+  box-shadow:0 0 40px 6px rgba(79,209,255,.35)}
+.sorb.thinking .r1{animation-duration:1.600s}.sorb.thinking .r2{animation-duration:1.100s}
+.sorb.thinking b{animation:opulse 1.200s ease-in-out infinite}
+.sorb.speaking b{animation:opulse .550s ease-in-out infinite}
+.sorb.listening{--oc:#4ADE80}
+.sorb.listening b{background:radial-gradient(circle at 50% 45%,#EFFFF4 0%,#4ADE80 30%,#0F5131 70%,transparent 72%);animation:olisten 1s ease-in-out infinite}
+@keyframes ospin{to{transform:rotate(360deg)}}
+@keyframes opulse{50%{transform:scale(1.080);box-shadow:0 0 70px 14px rgba(79,209,255,.55)}}
+@keyframes olisten{50%{transform:scale(1.120);box-shadow:0 0 60px 12px rgba(74,222,128,.55)}}
+.sstate{margin-top:14px;font-size:13.500px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:#4FD1FF}
+.said{margin-top:20px;display:grid;gap:12px;text-align:left;min-height:11.500em}
+.said p{display:grid;gap:4px}
+.said span{font-size:12.500px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#7F9BB3}
+.said em{font-style:normal;font-size:16.500px;line-height:1.5;color:#D6E7F5}
+.said .you{justify-items:end;text-align:right}
+.said .you em{background:#0F2A44;border:1px solid #1C4468;border-radius:14px 14px 4px 14px;padding:9px 14px;color:#EAF6FF}
+.said .it em{min-height:4.500em}
+@media (max-width:900px){.sar-top{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.sorb i,.sorb b{animation:none!important}}
+
+.win{margin-top:clamp(44px,6vw,80px);border:1px solid #1B3A57;border-radius:18px;overflow:hidden;background:#05090F;
+  box-shadow:0 0 0 1px rgba(79,209,255,.08),0 60px 120px -50px rgba(79,209,255,.45)}
+.win-bar{display:flex;align-items:center;gap:18px;padding:10px 14px;background:#0A1522;border-bottom:1px solid #16314A}
+.dots{display:flex;gap:7px;flex:none}
+.dots i{width:11px;height:11px;border-radius:50%;background:#22405C}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:1px solid transparent;background:transparent;color:#8FA9C0;border-radius:9px;padding:8px 14px;
+  font:600 14.500px/1.2 var(--display);cursor:pointer}
+.tabs button:hover{color:#EAF6FF}
+.tabs button[aria-selected="true"]{background:#12283D;border-color:#24507A;color:#EAF6FF}
+.win-v img{width:100%;height:auto;display:block}
+.win-cap{margin-top:14px;font-size:15px;color:#8FA9C0;max-width:70ch}
+@media (max-width:560px){.dots{display:none}.tabs button{padding:7px 10px;font-size:13.500px}}
+
+.sar-h{color:#fff;font-size:clamp(24px,2.800vw,32px);letter-spacing:-.03em;margin-top:clamp(52px,7vw,88px)}
+.turn{list-style:none;margin:26px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;counter-reset:t}
+.turn li{counter-increment:t;border:1px solid #16314A;border-radius:16px;padding:22px 20px;background:rgba(11,20,32,.8)}
+.turn li::before{content:counter(t);display:grid;place-items:center;width:38px;height:38px;border-radius:11px;
+  background:rgba(79,209,255,.12);border:1px solid rgba(79,209,255,.45);color:#BFEFFF;font:800 17px/1 var(--display)}
+.turn b{display:block;margin-top:16px;color:#fff;font:700 19px/1.25 var(--display);letter-spacing:-.02em}
+.turn span{display:block;margin-top:6px;font-size:16px;line-height:1.5}
+@media (max-width:900px){.turn{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.turn{grid-template-columns:1fr}}
+.limits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
+.lim{border:1px solid #16314A;border-radius:16px;padding:24px 22px;background:rgba(11,20,32,.8)}
+.lim h3{color:#fff;font-size:19px}
+.lim ul{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
+.lim li{position:relative;padding-left:30px;font-size:16px;line-height:1.45;color:#C9DBEA}
+.lim li::before{content:"";position:absolute;left:0;top:2px;width:20px;height:20px;border-radius:50%}
+.lim.yes li::before{background:#4ADE80 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.500 10.500l3 3 6-7' fill='none' stroke='%2304210F' stroke-width='2.200' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/20px no-repeat}
+.lim.no li::before{background:#FFB347 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6.500 6.500l7 7M13.500 6.500l-7 7' fill='none' stroke='%232A1700' stroke-width='2.200' stroke-linecap='round'/%3E%3C/svg%3E") center/20px no-repeat}
+.lim.why{background:linear-gradient(160deg,rgba(61,90,254,.30),rgba(11,20,32,.8) 60%);border-color:#2A4A8A}
+.lim.why p{margin-top:14px;font-size:16px;line-height:1.55;color:#C9DBEA}
+@media (max-width:900px){.limits{grid-template-columns:1fr}}
+
+/* what we build: cards */
+.wgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin-top:38px}
+.wcard{background:var(--surface);border:1px solid var(--rule);border-radius:20px;padding:26px 22px 24px}
+.wcard h3{margin-top:20px;font-size:20px}
+.wcard p{margin-top:8px;font-size:16px}
+@media (max-width:1000px){.wgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.wgrid{grid-template-columns:1fr}}
+
+/* what we build (rows, unused) */
+.what{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(28px,5vw,72px);margin-top:36px}
+.what div{padding:26px 0;border-top:2px solid var(--ink)}
+.what p{margin-top:8px}
+.what .eg{margin-top:12px;font-size:15.5px;color:var(--muted)}
+@media (max-width:720px){.what{grid-template-columns:1fr}}
+
+/* the offer */
+.offer{position:relative;overflow:hidden;color:#E4E8FF;
+  background:linear-gradient(120deg,#2A3FE0 0%,#5B3FF0 55%,#7C4DFF 100%)}
+.offer::before{content:"";position:absolute;right:-12%;top:-40%;width:60%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,rgba(25,200,230,.5),transparent 65%)}
+.offer .wrap{position:relative}
+.offer h2{color:#fff;max-width:17ch}
+.offer .lede{color:#E4E8FF;max-width:56ch}
+.steps{list-style:none;margin:46px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;counter-reset:s}
+.steps li{counter-increment:s;border-radius:16px;padding:22px 20px 22px;background:rgba(7,11,25,.28);border:1px solid rgba(255,255,255,.22)}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#fff;
+  color:#2A3FE0;font:800 19px/1 var(--display)}
+.steps b{display:block;margin-top:16px;font:700 19px/1.25 var(--display);color:#fff;letter-spacing:-.02em}
+.steps span{display:block;margin-top:6px;font-size:16px;line-height:1.5}
+.offer .go{margin-top:38px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px}
+.offer .go p{font-size:15.5px}
+@media (max-width:900px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.steps{grid-template-columns:1fr}}
+
+/* case study */
+.case{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);margin-top:36px;align-items:start}
+.ba{display:grid;gap:14px}
+.ba>div{padding:22px 24px;border-radius:16px}
+.ba h3{font-size:17px;margin-bottom:8px}
+.ba p+p{margin-top:8px}
+.ba .before{background:var(--surface);border:1px solid var(--rule)}
+.ba .after{background:var(--night);color:var(--night-body);border:1px solid var(--night-rule)}
+.ba .after h3{color:#7FE9FF}
+.may h3{margin-bottom:6px}
+.may table{border-collapse:collapse;width:100%;font-size:16px;margin-top:8px}
+.may td{padding:10px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+.may td:last-child{text-align:right;font-weight:600;white-space:nowrap;padding-left:16px}
+.may .y{color:var(--ok)}.may .n{color:var(--no)}
+.shot{margin:36px 0 0}
+.shot img{width:100%;border:1px solid var(--rule);border-radius:16px;box-shadow:0 30px 60px -30px rgba(11,18,36,.45)}
+figcaption{margin-top:10px;font-size:14px;color:var(--muted)}
+.acts{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+@media (max-width:860px){.case{grid-template-columns:1fr}}
+.also{margin-top:64px}
+.also ul{list-style:none;margin:18px 0 0;padding:0;border-top:1px solid var(--rule)}
+.also li{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.9fr);gap:6px 32px;padding:16px 0;border-bottom:1px solid var(--rule)}
+.also b{color:var(--ink);font:700 18px/1.3 var(--display);letter-spacing:-.02em}
+@media (max-width:720px){.also li{grid-template-columns:1fr}}
+
+/* about */
+.about{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,72px);align-items:start}
+.about .txt p+p{margin-top:16px}
+.rules{list-style:none;margin:0;padding:0}
+.rules li{padding:18px 0;border-top:1px solid var(--rule)}
+.rules li:last-child{border-bottom:1px solid var(--rule)}
+.rules b{display:block;color:var(--ink);font:700 19px/1.3 var(--display);letter-spacing:-.02em}
+.rules span{display:block;margin-top:4px}
+@media (max-width:860px){.about{grid-template-columns:1fr}}
+
+/* form and contact */
+.start{position:relative;background:var(--night);color:var(--night-body);overflow:hidden;isolation:isolate}
+.start::before{content:"";position:absolute;z-index:-1;inset:0;
+  background:radial-gradient(40% 50% at 12% 10%,rgba(61,90,254,.3),transparent 70%),radial-gradient(30% 40% at 92% 88%,rgba(124,77,255,.24),transparent 70%)}
+.start h2{color:var(--night-ink)}
+.start .lede{color:var(--night-body)}
+.start .wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,6vw,80px);align-items:start}
+@media (max-width:900px){.start .wrap{grid-template-columns:1fr}}
+form{margin-top:30px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.fd{display:grid;gap:6px}
+.fd.wide{grid-column:1/-1}
+label{font-size:15px;font-weight:500;color:var(--night-ink)}
+label i{font-style:normal;font-weight:400;color:var(--night-body)}
+input,select,textarea{width:100%;font:400 16.5px/1.4 var(--sans);color:var(--night-ink);background:rgba(15,22,48,.9);
+  border:1px solid var(--night-rule);border-radius:12px;padding:13px 14px}
+select option{background:#0F1630;color:#F3F5FF}
+textarea{min-height:120px;resize:vertical}
+input::placeholder,textarea::placeholder{color:#7F8AB0}
+input:focus,select:focus,textarea:focus{outline:3px solid rgba(25,200,230,.55);outline-offset:1px;border-color:var(--cyan)}
+.sendrow{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:4px}
+.fnote{grid-column:1/-1;font-size:14.5px}
+.fmsg{grid-column:1/-1;font-size:15.5px;color:var(--night-ink);background:rgba(15,22,48,.9);border:1px solid var(--night-rule);
+  border-left:3px solid var(--cyan);border-radius:10px;padding:12px 14px}
+@media (max-width:560px){form{grid-template-columns:1fr}}
+.reach h3{color:var(--night-ink);font-size:26px}
+.reach>p{margin-top:8px}
+.ways{display:grid;gap:12px;margin-top:22px}
+.way{display:block;text-decoration:none;background:rgba(15,22,48,.9);border:1px solid var(--night-rule);border-radius:16px;padding:18px 20px;color:var(--night-body)}
+.way:hover{border-color:var(--cyan)}
+.way{position:relative;padding-left:76px!important;min-height:84px}
+.way>.wi,.way>.wa{position:absolute;left:20px;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+  background:rgba(25,200,230,.12);border:1px solid rgba(25,200,230,.4)}
+.way>.wi{padding:9px}
+.wi{width:22px;height:22px;stroke:#7FE9FF;fill:none;stroke-width:1.800;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.wa{display:inline-grid;place-items:center;font-style:normal;flex:none}
+.wa img{width:100%;height:100%;display:block}
+.way>.wa img{width:26px;height:26px}
+.btn .wa{width:22px;height:22px;margin-right:10px}
+.btn .wa .wi{stroke:#0B1224}
+.foot .wa{width:18px;height:18px;margin-right:8px;vertical-align:-3px}
+.foot .wa .wi{width:18px;height:18px}
+.way span{display:block;font-size:14.5px}
+.way b{display:block;margin-top:4px;font:700 21px/1.2 var(--display);color:var(--night-ink);letter-spacing:-.02em;overflow-wrap:anywhere}
+.foot{background:var(--night);color:var(--night-body);border-top:1px solid var(--night-rule);font-size:15.500px}
+.foot .wrap{display:grid;grid-template-columns:minmax(0,1.500fr) repeat(3,minmax(0,1fr));gap:28px;padding-block:48px 34px}
+.fbrand p{margin-top:14px;max-width:32ch}
+.foot ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:10px;align-content:start}
+.foot a{color:var(--night-body);text-decoration:none}
+.foot a:hover{color:var(--night-ink)}
+.foot .mark{color:var(--night-ink)}
+.foot .fine{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:18px 26px;border-top:1px solid var(--night-rule);font-size:14.500px}
+@media (max-width:820px){.foot .wrap{grid-template-columns:repeat(2,minmax(0,1fr))}.fbrand{grid-column:1/-1}}
+
+/* what we build: before / after */
+.wcard{display:flex;flex-direction:column}
+.flow{margin-top:auto;padding-top:20px}
+.wgrid{counter-reset:w}
+.wcard{position:relative;counter-increment:w}
+.wcard::before{content:counter(w);position:absolute;top:26px;right:22px;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+  background:linear-gradient(135deg,rgba(61,90,254,.12),rgba(124,77,255,.12));border:1px solid rgba(61,90,254,.28);color:var(--brand);font:800 17px/1 var(--display)}
+.flow div{display:grid;grid-template-columns:58px 1fr;gap:10px;align-items:baseline;padding:9px 0;border-top:1px dashed var(--rule);font-size:14.5px;line-height:1.4}
+.flow i{font:700 11.5px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;font-style:normal;color:var(--muted)}
+.flow .af{color:var(--ink);font-weight:600}
+.flow .af i{color:var(--brand)}
+
+/* questions */
+.faq{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:clamp(28px,5vw,72px);align-items:start}
+.faq .ask{margin-top:26px;display:flex;flex-wrap:wrap;gap:12px}
+.qa{border-top:1px solid var(--rule)}
+.qa details{border-bottom:1px solid var(--rule)}
+.qa summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:18px;padding:20px 2px;
+  font:700 19px/1.3 var(--display);color:var(--ink);letter-spacing:-.02em}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary::after{content:"";flex:none;width:30px;height:30px;border-radius:10px;border:1px solid var(--rule);background:var(--surface)
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233D5AFE' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M12 6v12M6 12h12'/%3E%3C/svg%3E") center/16px no-repeat;
+  transition:border-color .2s ease}
+.qa details[open] summary::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233D5AFE' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M6 12h12'/%3E%3C/svg%3E");border-color:var(--brand)}
+.qa summary:hover{color:var(--brand)}
+.qa p{padding:0 46px 22px 2px;max-width:62ch}
+@media (max-width:860px){.faq{grid-template-columns:1fr}}
+
+/* floating WhatsApp */
+.fab{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:25;
+  display:inline-flex;align-items:center;gap:10px;height:54px;padding:0 20px 0 16px;border-radius:999px;text-decoration:none;
+  background:linear-gradient(135deg,#3D5AFE,#7C4DFF);color:#fff;font:700 15.5px/1 var(--display);
+  box-shadow:0 10px 30px rgba(61,90,254,.38),0 2px 6px rgba(11,18,36,.25);
+  opacity:0;transform:translateY(16px);pointer-events:none;transition:opacity .25s ease,transform .25s ease}
+.fab.show{opacity:1;transform:none;pointer-events:auto}
+.fab:hover{filter:brightness(1.08)}
+.fab .wa{width:24px;height:24px}
+.fab .wa .wi{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:560px){.fab{width:54px;padding:0;justify-content:center}.fab b{display:none}}
+@media (prefers-reduced-motion:reduce){.fab{transition:none}}
+@media print{.fab{display:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#offer">Skip to the free month</a>
+
+<nav class="nav" aria-label="Main">
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="Anvaaya, home"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3D5AFE"/><stop offset="1" stop-color="#7C4DFF"/></linearGradient></defs><rect width="64" height="64" rx="18" fill="url(#mg)"/><path d="M19 22 10 32 19 42" stroke="#FFFFFF" stroke-width="4.500" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M45 22 54 32 45 42" stroke="#FFFFFF" stroke-width="4.500" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 43 32 20 39 43" stroke="#9FE9FF" stroke-width="4.500" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Anvaaya</a>
+    <ul>
+      <li><a href="#sarathi">SARATHI</a></li>
+      <li><a href="#connect">Connectors</a></li>
+      <li><a href="#what">What we build</a></li>
+      <li><a href="#offer">Free month</a></li>
+      <li><a href="#about">About us</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#contact">Contact us</a></li>
+    </ul>
+    <a class="btn btn-white" href="#start">Start free</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <a class="pill" href="#offer"><i></i>Free for one month, on your dummy data</a>
+      <h1>AI that plugs into everything your business runs on.</h1>
+      <p class="sub">Anvaaya builds AI agents, integrations and automation on top of your ERP, email, spreadsheets and APIs. Bring us what you want built, with your dummy data, and see the results.</p>
+      <div class="cta">
+        <a class="btn btn-white" href="#start">Start your free month</a>
+        <a class="btn btn-ghost" href="#sarathi">Meet SARATHI</a>
+      </div>
+    </div>
+
+    <div class="scene" id="scene" role="img" aria-label="An AI agent at the centre, with MCP servers, APIs, webhooks, databases, ERP, email, spreadsheets, bank feeds, CRM and portals connected around it">
+      <div class="world" id="world">
+        <div class="plane">
+          <div class="glow"></div>
+          <div class="ring" style="--r:var(--r1);--d:46s">
+            <span class="spoke" style="--a:0deg;--dl:-0.0s"><i></i></span><div class="sat" style="--a:0deg"><div class="up"><span class="chip hot"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="4.5" cy="5.5" r="2"/><circle cx="19.5" cy="5.5" r="2"/><circle cx="12" cy="20.5" r="2"/><path d="M6 7l3.8 3M18 7l-3.8 3M12 15v3.5"/></svg>MCP</span></div></div>
+            <span class="spoke" style="--a:90deg;--dl:-0.47s"><i></i></span><div class="sat" style="--a:90deg"><div class="up"><span class="chip hot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6 3 12l5 6M16 6l5 6-5 6M13.5 4l-3 16"/></svg>REST API</span></div></div>
+            <span class="spoke" style="--a:180deg;--dl:-0.94s"><i></i></span><div class="sat" style="--a:180deg"><div class="up"><span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Webhooks</span></div></div>
+            <span class="spoke" style="--a:270deg;--dl:-1.41s"><i></i></span><div class="sat" style="--a:270deg"><div class="up"><span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="7.5" ry="3"/><path d="M4.5 5.5v13c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-13M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></svg>SQL</span></div></div>
+          </div>
+          <div class="ring rev" style="--r:var(--r2);--d:70s">
+            <span class="spoke" style="--a:18deg;--dl:-0.0s"><i></i></span><div class="sat" style="--a:18deg"><div class="up"><span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>ERP</span></div></div>
+            <span class="spoke" style="--a:78deg;--dl:-0.47s"><i></i></span><div class="sat" style="--a:78deg"><div class="up"><span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 7 8.5 6.5L20.5 7"/></svg>Email</span></div></div>
+            <span class="spoke" style="--a:138deg;--dl:-0.94s"><i></i></span><div class="sat" style="--a:138deg"><div class="up"><span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9.5 4v16"/></svg>Spreadsheets</span></div></div>
+            <span class="spoke" style="--a:198deg;--dl:-1.41s"><i></i></span><div class="sat" style="--a:198deg"><div class="up"><span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5 12 4l9 5.5M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg>Bank feeds</span></div></div>
+            <span class="spoke" style="--a:258deg;--dl:-1.88s"><i></i></span><div class="sat" style="--a:258deg"><div class="up"><span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.900 1.900 6.500 5.500M16.500 5a3.500 3.500 0 0 1 0 6.500M18.500 14.800c1.800.800 2.800 2.600 3 5.200"/></svg>CRM</span></div></div>
+            <span class="spoke" style="--a:318deg;--dl:-2.35s"><i></i></span><div class="sat" style="--a:318deg"><div class="up"><span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.800 3 2.800 15 0 18M12 3c-2.800 3-2.800 15 0 18"/></svg>Portals</span></div></div>
+          </div>
+        </div>
+        <div class="core"><div class="cube"><b><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M19 22 10 32 19 42" stroke="#FFFFFF" stroke-width="4.500" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M45 22 54 32 45 42" stroke="#FFFFFF" stroke-width="4.500" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 43 32 20 39 43" stroke="#FFFFFF" stroke-width="4.500" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></b><b><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M19 22 10 32 19 42" stroke="#FFFFFF" stroke-width="4.500" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M45 22 54 32 45 42" stroke="#FFFFFF" stroke-width="4.500" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 43 32 20 39 43" stroke="#FFFFFF" stroke-width="4.500" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></b><b></b><b></b><b></b><b></b></div></div>
+      </div>
+      <span class="corelabel">AI agent</span>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="sec sar" id="sarathi">
+  <div class="wrap">
+    <div class="sar-head">
+      <div>
+        <span class="badge">Our flagship product</span>
+        <h2>SARATHI</h2>
+        <p class="sar-tag">One voice in front of all your AI agents.</p>
+      </div>
+      <div class="sar-act">
+        <button class="btn btn-white" type="button" id="sarBtn" aria-expanded="false" aria-controls="sarMore"><span id="sarLbl">See what SARATHI is</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <a class="btn btn-ghost" href="sarathi.html">Open the live demo</a>
+      </div>
+    </div>
+
+    <div id="sarMore" hidden>
+    <div class="sar-top">
+      <div>
+        <p class="sar-sub">Ask a question out loud. SARATHI checks your mail, your databases and the agents working in the background, answers briefly in speech and puts the full detail on screen. Named for the charioteer: it steers the agents, it does not replace them.</p>
+        <div class="cta">
+          <a class="btn btn-ghost" href="#start">Get it for your team</a>
+        </div>
+      </div>
+      <div class="talk" id="talk" aria-label="A sample exchange with SARATHI, on dummy data">
+        <div class="sorb" id="sorb"><i class="r1"></i><i class="r2"></i><i class="r3"></i><b></b></div>
+        <p class="sstate" id="sstate">Speaking</p>
+        <div class="said">
+          <p class="you"><span>You</span><em id="sq">How did the northern plants dispatch last week?</em></p>
+          <p class="it"><span>SARATHI</span><em id="sa">Four hundred and twelve containers went out, about nine per cent ahead of the week before. The detail is on screen.</em></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="win">
+      <div class="win-bar">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <div class="tabs" role="tablist" aria-label="SARATHI screens">
+          <button type="button" role="tab" aria-selected="true" aria-controls="winv" data-s="0">A spoken answer</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="winv" data-s="1">A draft, never sent</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="winv" data-s="2">Agents asking you</button>
+        </div>
+      </div>
+      <div class="win-v" id="winv" role="tabpanel">
+        <img src="shots/sarathi-answer.jpg" width="2080" height="1440" alt="SARATHI answering a dispatch question: a short spoken summary with the full table on screen">
+        <img src="shots/sarathi-draft.jpg" width="2080" height="1440" alt="SARATHI with an email draft it prepared and did not send" loading="lazy" hidden>
+        <img src="shots/sarathi-waiting.jpg" width="2080" height="1440" alt="SARATHI listing two questions the agents are waiting on a person to answer" loading="lazy" hidden>
+      </div>
+    </div>
+    <p class="win-cap" id="wincap">The real interface, running on dummy data. It speaks a short answer and keeps the table for the screen.</p>
+
+    <h3 class="sar-h">How one question is handled</h3>
+    <ol class="turn">
+      <li><b>You ask</b><span>By voice or by typing. Say “Hey Sarathi” and it starts listening.</span></li>
+      <li><b>It works within its limits</b><span>It uses only the tools it has been given, and shows its progress as it goes.</span></li>
+      <li><b>It answers twice</b><span>A short answer spoken aloud, and the full table or draft on screen.</span></li>
+      <li><b>It asks when unsure</b><span>An agent that is not confident asks you, and your answer is reused from then on.</span></li>
+    </ol>
+
+    <div class="limits">
+      <div class="lim yes">
+        <h3>What it may do</h3>
+        <ul>
+          <li>Read mail and prepare drafts</li>
+          <li>Query your reporting databases, read only</li>
+          <li>List the agents and message them</li>
+          <li>Read files</li>
+        </ul>
+      </div>
+      <div class="lim no">
+        <h3>What it may not do</h3>
+        <ul>
+          <li>Send or delete mail</li>
+          <li>Write or edit files</li>
+          <li>Run commands on the machine</li>
+          <li>Reach the open internet or start new agents</li>
+        </ul>
+      </div>
+      <div class="lim why">
+        <h3>Why you can trust it</h3>
+        <p>These limits sit in its configuration, not in its instructions. It runs on one machine inside your network, and database questions are read only and rolled back afterwards.</p>
+      </div>
+    </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="connect">
+  <div class="wrap">
+    <h2>Connectors, APIs and MCP</h2>
+    <p class="lede">Three ways we plug AI into the systems you already have, so nothing has to be replaced first.</p>
+    <div class="three">
+      <article class="tcard">
+        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3v5M15 3v5M6 8h12v4a6 6 0 0 1-12 0zM12 18v3"/></svg></span>
+        <h3>Connectors</h3>
+        <p>Direct links into the systems your teams work in every day, reading at the source so nothing is retyped.</p>
+        <ul class="tags"><li>SAP</li><li>Oracle</li><li>NetSuite</li><li>SQL Server</li><li>PostgreSQL</li><li>Microsoft 365</li><li>SharePoint</li><li>Power BI</li></ul>
+      </article>
+      <article class="tcard">
+        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6 3 12l5 6M16 6l5 6-5 6M13.5 4l-3 16"/></svg></span>
+        <h3>APIs</h3>
+        <p>For anything with an interface, we read and write through its API, with signed requests and scheduled or event-driven calls.</p>
+        <ul class="tags"><li>REST</li><li>Webhooks</li><li>OAuth</li><li>Microsoft Graph</li><li>ERP query APIs</li><li>n8n</li><li>Power Automate</li></ul>
+      </article>
+      <article class="tcard">
+        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="4.5" cy="5.5" r="2"/><circle cx="19.5" cy="5.5" r="2"/><circle cx="12" cy="20.5" r="2"/><path d="M6 7l3.8 3M18 7l-3.8 3M12 15v3.5"/></svg></span>
+        <h3>MCP servers</h3>
+        <p>The Model Context Protocol hands an AI agent a small set of tools with exactly the permissions you grant. We build these servers, including one for Outlook.</p>
+        <ul class="tags"><li>Model Context Protocol</li><li>Claude</li><li>Least-privilege tools</li><li>Per-user sign-in</li></ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sec sunk" id="what">
+  <div class="wrap">
+    <h2>What we build</h2>
+    <p class="lede">We start from a job your team does by hand and finish with something that runs without them.</p>
+    <div class="wgrid">
+      <article class="wcard"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 8V4M9 13v2M15 13v2M2.500 13v3M21.500 13v3"/><circle cx="12" cy="3.500" r="1"/></svg></span>
+        <h3>AI agents and assistants</h3>
+        <p>Agents that read mail, answer questions from your data and prepare the reply or the report. They draft; a person approves.</p>
+        <div class="flow"><div><i>Before</i><span>Mail read and answered by hand</span></div><div class="af"><i>After</i><span>Reply drafted and waiting for approval</span></div></div></article>
+      <article class="wcard"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3v5M15 3v5M6 8h12v4a6 6 0 0 1-12 0zM12 18v3"/></svg></span>
+        <h3>Integrations</h3>
+        <p>ERP, mail, spreadsheets and portals joined up so data moves by itself. Your source systems stay read-only.</p>
+        <div class="flow"><div><i>Before</i><span>Copied from one system to the next</span></div><div class="af"><i>After</i><span>Moves by itself, on a schedule</span></div></div></article>
+      <article class="wcard"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.700-5.600L20 8M20 4v4h-4M20 12a8 8 0 0 1-13.700 5.600L4 16M4 20v-4h4"/></svg></span>
+        <h3>Workflow automation</h3>
+        <p>Reconciliations, payment chases and routine reports run on a schedule or a trigger, and escalate only when something does not match.</p>
+        <div class="flow"><div><i>Before</i><span>Every line checked by a person</span></div><div class="af"><i>After</i><span>Only the mismatches reach a person</span></div></div></article>
+      <article class="wcard"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>
+        <h3>AI on your reporting</h3>
+        <p>Commentary, monthly packs and review decks drafted from the numbers in your house style, then approved by an analyst.</p>
+        <div class="flow"><div><i>Before</i><span>Written from scratch every month</span></div><div class="af"><i>After</i><span>Drafted, then signed off by an analyst</span></div></div></article>
+    </div>
+    <div class="also">
+      <h3>Work we have delivered</h3>
+      <ul>
+        <li><b>Outlook MCP server</b><span>Lets an AI agent draft mail with attachments under delegated, least-privilege permissions.</span></li>
+        <li><b>Variance commentary engine</b><span>Reads actual against plan, finds the drivers, and drafts the commentary for an analyst to approve.</span></li>
+        <li><b>Purchase order watcher</b><span>Watches a customer portal that sends no notifications and alerts the team when a new order appears.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec offer" id="offer">
+  <div class="wrap">
+    <h2>Bring your dummy data. See the results. Free for one month.</h2>
+    <p class="lede">Whatever you want built, a service, an integration or an automation, hand it to us with your own dummy data. We build it, you see what it produces, and the whole month costs nothing.</p>
+    <ol class="steps">
+      <li><b>Tell us what you want built</b><span>Any service, integration or automation you have in mind.</span></li>
+      <li><b>Send your dummy data</b><span>Sample files or records shaped like your real ones. No live data needed.</span></li>
+      <li><b>We build it</b><span>The working thing, connected to your dummy data.</span></li>
+      <li><b>You see the results</b><span>Use it free for one month, then decide what happens next.</span></li>
+    </ol>
+    <div class="go">
+      <a class="btn btn-white" href="#start">Start your free month</a>
+      <p>Open to any work you have: services, integrations, automation and AI.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="about">
+  <div class="wrap">
+    <div class="about">
+      <div class="txt">
+        <h2>About us</h2>
+        <p class="lede">Anvaaya is an AI, integration and automation company for finance and operations teams.</p>
+        <p style="margin-top:16px">Our team brings finance, operations and engineering together, which is why we start from the task and the control around it, not from the tool. We design the data model, write the pipeline, build the interface and stay with it in production.</p>
+        <p>We work with Claude and the Model Context Protocol, n8n, Power Automate, Python, SQL Server, SAP, Oracle and Power BI, remote or on site.</p>
+      </div>
+      <ul class="rules">
+        <li><b>Agents draft, people approve</b><span>Nothing is sent, posted or published without a person reading it first.</span></li>
+        <li><b>Your systems stay read-only</b><span>We read from the source and write only to what we build.</span></li>
+        <li><b>A fixed price before work starts</b><span>A written scope and one number for a defined build. No retainer.</span></li>
+        <li><b>You keep everything</b><span>The running system, the source and a handover your team can maintain.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec sunk" id="faq">
+  <div class="wrap">
+    <div class="faq">
+      <div>
+        <h2>Questions people ask</h2>
+        <p class="lede">The short answers. Anything else, ask the team directly.</p>
+        <div class="ask"><a class="btn btn-brand" href="https://wa.me/917097050533?text=Hello%20Anvaaya%2C%20I%20have%20a%20question." rel="noopener">Ask on WhatsApp</a><a class="btn btn-line" href="#start">Start your free month</a></div>
+      </div>
+      <div class="qa">
+        <details><summary>Do you need access to our live systems?</summary><p>Not for the free month. You send dummy data shaped like your real records. When a build goes live, it reads from your systems with read-only access and writes only to what we build.</p></details>
+        <details><summary>Will the AI send anything on its own?</summary><p>No. Agents draft the reply, the report or the posting, and a person on your team reads and approves it before anything leaves.</p></details>
+        <details><summary>Which systems can you connect to?</summary><p>Anything with a database, an export, an API or a mailbox. That covers ERPs such as SAP, Oracle and NetSuite, SQL databases, Microsoft 365 and SharePoint, spreadsheets, bank files and web portals.</p></details>
+        <details><summary>What happens after the free month?</summary><p>You decide. If you want it running on your real data, you get a written scope and one fixed price. There is no retainer, and nothing carries on unless you ask.</p></details>
+        <details><summary>Who owns what you build?</summary><p>You do: the running system, the source code and a handover your team can maintain.</p></details>
+        <details><summary>Do you work remotely or on site?</summary><p>Both. Most of the work is done remotely, and we come on site when the job needs it.</p></details>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<section class="sec start" id="start">
+  <div class="wrap">
+    <div>
+      <h2>Start your free month</h2>
+      <p class="lede">Tell us what you want built. We reply with how to send your dummy data and what you will see at the end.</p>
+      <form id="tf" novalidate>
+        <div class="fd"><label for="fN">Your name</label><input id="fN" name="name" type="text" autocomplete="name" maxlength="80" required></div>
+        <div class="fd"><label for="fC">Company</label><input id="fC" name="company" type="text" autocomplete="organization" maxlength="80"></div>
+        <div class="fd"><label for="fE">Work email</label><input id="fE" name="email" type="email" autocomplete="email" maxlength="120" required></div>
+        <div class="fd"><label for="fP">Phone <i>(optional)</i></label><input id="fP" name="phone" type="tel" autocomplete="tel" maxlength="20"></div>
+        <div class="fd wide"><label for="fK">What kind of work is it?</label>
+          <select id="fK" name="kind">
+            <option>AI agent or assistant</option>
+            <option>Integration (connector, API or MCP)</option>
+            <option>Workflow automation</option>
+            <option>A service or tool for our team</option>
+            <option>Not sure yet</option>
+          </select></div>
+        <div class="fd wide"><label for="fM">What do you want built?</label>
+          <textarea id="fM" name="task" maxlength="1500" required placeholder="What it should do, and which systems it should connect to."></textarea></div>
+        <div class="fd wide"><label for="fD">Your dummy data <i>(optional)</i></label>
+          <input id="fD" name="data" type="text" maxlength="200" placeholder="For example: 3 Excel files and a sample ERP export"></div>
+        <div class="sendrow">
+          <button class="btn btn-white" type="submit" id="fS"><i class="wa"><svg class="wi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.500a8.500 8.500 0 0 0-7.300 12.900L3.500 20.500l4.300-1.100A8.500 8.500 0 1 0 12 3.500z"/><path d="M8.500 11h7M8.500 14h4.500"/></svg></i>Send request on WhatsApp</button>
+        </div>
+        <p class="fmsg" id="fMsg" role="status" hidden></p>
+        <p class="fnote" id="fNote">Sending opens WhatsApp with the request filled in. You can attach your dummy data there.</p>
+      </form>
+    </div>
+
+    <div class="reach" id="contact">
+      <h3>Contact us</h3>
+      <p>Prefer to talk it through first? Reach the team directly.</p>
+      <div class="ways">
+        <a class="way" href="tel:+917097050533"><svg class="wi" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.500 3.500h3l1.500 4-2 1.500a11 11 0 0 0 6 6l1.500-2 4 1.500v3a2 2 0 0 1-2.200 2A16.500 16.500 0 0 1 4.500 5.700a2 2 0 0 1 2-2.200z"/></svg><span>Call</span><b>+91 70970 50533</b></a>
+        <a class="way" href="https://wa.me/917097050533?text=Hello%20Anvaaya%2C%20I%20would%20like%20to%20know%20more%20about%20the%20free%20month." rel="noopener"><i class="wa"><svg class="wi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.500a8.500 8.500 0 0 0-7.300 12.900L3.500 20.500l4.300-1.100A8.500 8.500 0 1 0 12 3.500z"/><path d="M8.500 11h7M8.500 14h4.500"/></svg></i><span>WhatsApp</span><b>Message the team</b></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="fbrand"><a class="mark" href="#top" aria-label="Anvaaya, home"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3D5AFE"/><stop offset="1" stop-color="#7C4DFF"/></linearGradient></defs><rect width="64" height="64" rx="18" fill="url(#mg)"/><path d="M19 22 10 32 19 42" stroke="#FFFFFF" stroke-width="4.500" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M45 22 54 32 45 42" stroke="#FFFFFF" stroke-width="4.500" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 43 32 20 39 43" stroke="#9FE9FF" stroke-width="4.500" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Anvaaya</a><p>AI agents, integrations and automation, built on the systems you already run.</p></div>
+    <ul><li><a href="#sarathi">SARATHI</a></li><li><a href="#connect">Connectors, APIs and MCP</a></li><li><a href="#what">What we build</a></li></ul>
+    <ul><li><a href="#offer">Free month</a></li><li><a href="#about">About us</a></li><li><a href="#faq">Questions</a></li><li><a href="#contact">Contact us</a></li></ul>
+    <ul><li><a href="tel:+917097050533">+91 70970 50533</a></li><li><a href="https://wa.me/917097050533" rel="noopener"><i class="wa"><svg class="wi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.500a8.500 8.500 0 0 0-7.300 12.900L3.500 20.500l4.300-1.100A8.500 8.500 0 1 0 12 3.500z"/><path d="M8.500 11h7M8.500 14h4.500"/></svg></i>WhatsApp</a></li><li><a href="sarathi.html">SARATHI live demo</a></li></ul>
+  </div>
+  <div class="wrap fine"><span>© 2026 Anvaaya. All rights reserved.</span><a href="#top">Back to top</a></div>
+</footer>
+
+
+<script>
+(function () {
+  /* ---- settings ---------------------------------------------------- */
+  var WHATSAPP = "917097050533";
+  /* Paste a form service address here and requests are delivered straight
+     to your inbox instead of opening the visitor's email app. */
+  var FORM_ENDPOINT = "";
+
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches,
+      fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+  var IMG = window.ANV_IMG || null;
+  [].forEach.call(document.querySelectorAll("img[data-src]"), function (im) {
+    var p = im.getAttribute("data-src"); im.src = IMG && IMG[p] ? IMG[p] : p;
+  });
+
+  /* ---- the 3D scene leans toward the pointer ------------------------ */
+  var hero = document.getElementById("top"), world = document.getElementById("world");
+  if (fine && !reduce) {
+    hero.addEventListener("pointermove", function (e) {
+      var r = hero.getBoundingClientRect(),
+          x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      world.style.setProperty("--ry", (x * 16).toFixed(2) + "deg");
+      world.style.setProperty("--rx", (-y * 12).toFixed(2) + "deg");
+    });
+    hero.addEventListener("pointerleave", function () {
+      world.style.setProperty("--ry", "0deg"); world.style.setProperty("--rx", "0deg");
+    });
+    /* cards tilt toward the pointer and carry a light with them */
+    [].forEach.call(document.querySelectorAll(".tcard"), function (c) {
+      c.addEventListener("pointermove", function (e) {
+        var r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        c.style.setProperty("--ty", ((x - 0.5) * 10).toFixed(2) + "deg");
+        c.style.setProperty("--tx", ((0.5 - y) * 10).toFixed(2) + "deg");
+        c.style.setProperty("--mx", (x * 100).toFixed(1) + "%"); c.style.setProperty("--my", (y * 100).toFixed(1) + "%");
+      });
+      c.addEventListener("pointerleave", function () {
+        c.style.setProperty("--ty", "0deg"); c.style.setProperty("--tx", "0deg");
+        c.style.removeProperty("--mx"); c.style.removeProperty("--my");
+      });
+    });
+  }
+
+
+
+  /* ---- SARATHI: details open on request ----------------------------- */
+  var sarBtn = document.getElementById("sarBtn"), sarMore = document.getElementById("sarMore"), sarLbl = document.getElementById("sarLbl");
+  function sarOpen(on) {
+    sarMore.hidden = !on; sarBtn.setAttribute("aria-expanded", on ? "true" : "false");
+    sarLbl.textContent = on ? "Hide the details" : "See what SARATHI is";
+  }
+  sarBtn.addEventListener("click", function () { sarOpen(sarMore.hidden); });
+  [].forEach.call(document.querySelectorAll('a[href="#sarathi"]'), function (a) {
+    a.addEventListener("click", function () { sarOpen(true); });
+  });
+  if (location.hash === "#sarathi") sarOpen(true);
+
+  /* ---- SARATHI: screen tabs ----------------------------------------- */
+  var tabs = [].slice.call(document.querySelectorAll(".tabs button")),
+      shots = [].slice.call(document.querySelectorAll("#winv img")), cap = document.getElementById("wincap"),
+      CAPS = ["The real interface, running on dummy data. It speaks a short answer and keeps the table for the screen.",
+              "Asked to write to the logistics lead, it prepares the email and leaves it in drafts for a person to send.",
+              "When an agent is not sure, it stops and asks. Here two questions are waiting for an answer."];
+  tabs.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var n = +b.dataset.s;
+      tabs.forEach(function (o) { o.setAttribute("aria-selected", o === b ? "true" : "false"); });
+      shots.forEach(function (im, i) { im.hidden = i !== n; });
+      cap.textContent = CAPS[n];
+    });
+  });
+
+  /* ---- SARATHI: a short exchange that plays while it is on screen ----- */
+  var orb = document.getElementById("sorb"), st = document.getElementById("sstate"),
+      sq = document.getElementById("sq"), sa = document.getElementById("sa"), talk = document.getElementById("talk");
+  var TALK = [
+    ["How did the northern plants dispatch last week?",
+     "Four hundred and twelve containers went out, about nine per cent ahead of the week before. The detail is on screen."],
+    ["Draft a note to the logistics lead about the Blueport drop.",
+     "The draft is saved in your mailbox. I have not sent it."],
+    ["Anything waiting on an answer?",
+     "Two questions are waiting. The dispatch agent has paused rather than guessing."]
+  ];
+  function setOrb(cls, label) { orb.className = "sorb" + (cls ? " " + cls : ""); st.textContent = label; st.style.color = cls === "listening" ? "#4ADE80" : "#4FD1FF"; }
+  if (reduce || !window.IntersectionObserver) { setOrb("", "Standing by"); }
+  else {
+    var live = false, turn = 0, wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+    var type = async function (el, s, ms) { el.textContent = ""; for (var i = 0; i < s.length; i++) { el.textContent += s[i]; if (i % 2 === 0) await wait(ms); } };
+    var loop = async function () {
+      while (live) {
+        var s = TALK[turn % TALK.length]; turn++;
+        sa.textContent = ""; setOrb("listening", "Listening"); await type(sq, s[0], 26); await wait(500);
+        setOrb("thinking", "Thinking"); await wait(1500);
+        setOrb("speaking", "Speaking"); await type(sa, s[1], 20); await wait(2600);
+        setOrb("", "Standing by"); await wait(900);
+      }
+    };
+    new IntersectionObserver(function (es) {
+      var on = es[0].isIntersecting;
+      if (on && !live) { live = true; loop(); } else if (!on) { live = false; }
+    }, { threshold: 0.3 }).observe(talk);
+  }
+
+  /* ---- official WhatsApp logo: used automatically once the file is added ---- */
+  (function () {
+    var probe = new Image();
+    probe.onload = function () {
+      [].forEach.call(document.querySelectorAll(".wa"), function (el) {
+        el.innerHTML = '<img src="icons/whatsapp.svg" alt="">';
+      });
+    };
+    probe.src = "icons/whatsapp.svg";
+  })();
+
+  /* ---- request form -------------------------------------------------- */
+  var form = document.getElementById("tf"), msg = document.getElementById("fMsg"), note = document.getElementById("fNote");
+  function val(id) { return document.getElementById(id).value.trim(); }
+  function say(t) { msg.textContent = t; msg.hidden = false; }
+  function check() {
+    var need = [["fN", "Add your name."], ["fE", "Add an email address we can reply to."], ["fM", "Tell us what you want built."]];
+    for (var i = 0; i < need.length; i++) {
+      var el = document.getElementById(need[i][0]);
+      if (!el.value.trim() || (el.type === "email" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(el.value.trim()))) {
+        say(need[i][1]); el.focus(); return false;
+      }
+    }
+    return true;
+  }
+  function text() {
+    return "Free month request for Anvaaya\n\n" +
+      "Name: " + val("fN") + "\nCompany: " + (val("fC") || "-") + "\nEmail: " + val("fE") +
+      "\nPhone: " + (val("fP") || "-") + "\nKind of work: " + val("fK") +
+      "\n\nWhat we want built:\n" + val("fM") + "\n\nDummy data: " + (val("fD") || "to follow") + "\n";
+  }
+  if (FORM_ENDPOINT) note.textContent = "Your request goes straight to the Anvaaya team.";
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!check()) return;
+    if (FORM_ENDPOINT) {
+      var b = document.getElementById("fS"); b.disabled = true; say("Sending your request.");
+      fetch(FORM_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ name: val("fN"), company: val("fC"), email: val("fE"), phone: val("fP"), kind: val("fK"), task: val("fM"), data: val("fD") }) })
+        .then(function (r) { if (!r.ok) throw 0; form.reset(); say("Request sent. We will reply to the email you gave."); })
+        .catch(function () { say("That did not send. Message or call us on the number beside this form."); })
+        .then(function () { b.disabled = false; });
+      return;
+    }
+    window.open("https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(text()), "_blank", "noopener");
+    say("WhatsApp should now be open with the request filled in. Attach your dummy data if you have it, then press send.");
+  });
+})();
+</script>
+<a class="fab" id="fab" href="https://wa.me/917097050533?text=Hello%20Anvaaya%2C%20I%20would%20like%20to%20know%20more." rel="noopener" aria-label="Message Anvaaya on WhatsApp"><i class="wa"><svg class="wi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.500a8.500 8.500 0 0 0-7.300 12.900L3.500 20.500l4.300-1.100A8.500 8.500 0 1 0 12 3.500z"/><path d="M8.500 11h7M8.500 14h4.500"/></svg></i><b>Message us</b></a>
+<script>
+(function(){var f=document.getElementById("fab"),s=document.getElementById("start"),inS=false;
+  function upd(){f.classList.toggle("show",window.scrollY>window.innerHeight*0.8&&!inS);}
+  if(s&&"IntersectionObserver" in window){new IntersectionObserver(function(e){inS=e[0].isIntersecting;upd();}).observe(s);}
+  addEventListener("scroll",upd,{passive:true});upd();})();
+</script>
+</body>
+</html>
