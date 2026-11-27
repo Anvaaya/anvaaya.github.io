@@ -365,6 +365,15 @@ input::placeholder,textarea::placeholder{color:#7F8AB0}
 input:focus,select:focus,textarea:focus{outline:3px solid rgba(25,200,230,.55);outline-offset:1px;border-color:var(--cyan)}
 .sendrow{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:4px}
 .fnote{grid-column:1/-1;font-size:14.5px}
+.si{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+#fS .si{margin-right:10px}
+.drop{display:flex;align-items:center;gap:12px;cursor:pointer;padding:16px 18px;border-radius:12px;border:1.5px dashed rgba(127,233,255,.45);
+  background:rgba(15,22,48,.6);color:var(--night-body);font-size:15px;font-weight:400;line-height:1.4}
+.drop:hover,.drop.over{border-color:var(--cyan);background:rgba(25,200,230,.08)}
+.drop .si{color:#7FE9FF}
+.drop input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.drop:focus-within{outline:3px solid rgba(25,200,230,.55);outline-offset:1px}
+.drop.has span{color:var(--night-ink)}
 .fmsg{grid-column:1/-1;font-size:15.5px;color:var(--night-ink);background:rgba(15,22,48,.9);border:1px solid var(--night-rule);
   border-left:3px solid var(--cyan);border-radius:10px;padding:12px 14px}
 @media (max-width:560px){form{grid-template-columns:1fr}}
@@ -722,13 +731,13 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(25,200,230,.55);o
           </select></div>
         <div class="fd wide"><label for="fM">What do you want built?</label>
           <textarea id="fM" name="task" maxlength="1500" required placeholder="What it should do, and which systems it should connect to."></textarea></div>
-        <div class="fd wide"><label for="fD">Your dummy data <i>(optional)</i></label>
-          <input id="fD" name="data" type="text" maxlength="200" placeholder="For example: 3 Excel files and a sample ERP export"></div>
+        <div class="fd wide"><label for="fF">Your dummy data <i>(optional)</i></label>
+          <label class="drop" for="fF"><input id="fF" name="files" type="file" multiple accept=".xlsx,.xls,.xlsm,.csv,.txt,.json,.xml,.pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg,.zip"><svg class="si" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg><span id="fFl">Attach files: Excel, CSV, PDF, Word or images. Up to 5 files, 5 MB in total.</span></label></div>
         <div class="sendrow">
-          <button class="btn btn-white" type="submit" id="fS"><i class="wa"><svg class="wi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.500a8.500 8.500 0 0 0-7.300 12.900L3.500 20.500l4.300-1.100A8.500 8.500 0 1 0 12 3.500z"/><path d="M8.500 11h7M8.500 14h4.500"/></svg></i>Send request on WhatsApp</button>
+          <button class="btn btn-white" type="submit" id="fS"><svg class="si" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 10.5 13.5M21 3l-6.500 18-4-7.500L3 9.500z"/></svg>Send request</button>
         </div>
         <p class="fmsg" id="fMsg" role="status" hidden></p>
-        <p class="fnote" id="fNote">Sending opens WhatsApp with the request filled in. You can attach your dummy data there.</p>
+        <p class="fnote" id="fNote">Your request and files go straight to the Anvaaya team by email. Prefer WhatsApp? Use the button beside this form.</p>
       </form>
     </div>
 
@@ -761,7 +770,7 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(25,200,230,.55);o
   var WHATSAPP = "917097050533";
   /* Paste a form service address here and requests are delivered straight
      to your inbox instead of opening the visitor's email app. */
-  var FORM_ENDPOINT = "";
+  var FORM_ENDPOINT = "https://formsubmit.co/ajax/info@anvaaya.co.in";
 
   var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches,
       fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -870,6 +879,16 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(25,200,230,.55);o
 
   /* ---- request form -------------------------------------------------- */
   var form = document.getElementById("tf"), msg = document.getElementById("fMsg"), note = document.getElementById("fNote");
+  var fileIn = document.getElementById("fF"), fileLbl = document.getElementById("fFl"), drop = fileIn.parentNode, fileHint = fileLbl.textContent;
+  function showFiles() {
+    var fs = [].slice.call(fileIn.files || []);
+    drop.classList.toggle("has", fs.length > 0);
+    fileLbl.textContent = fs.length ? fs.map(function (f) { return f.name; }).join(", ") : fileHint;
+  }
+  fileIn.addEventListener("change", showFiles);
+  ["dragenter", "dragover"].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave", "drop"].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop", function (e) { if (e.dataTransfer && e.dataTransfer.files.length) { fileIn.files = e.dataTransfer.files; showFiles(); } });
   function val(id) { return document.getElementById(id).value.trim(); }
   function say(t) { msg.textContent = t; msg.hidden = false; }
   function check() {
@@ -886,18 +905,36 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(25,200,230,.55);o
     return "Free month request for Anvaaya\n\n" +
       "Name: " + val("fN") + "\nCompany: " + (val("fC") || "-") + "\nEmail: " + val("fE") +
       "\nPhone: " + (val("fP") || "-") + "\nKind of work: " + val("fK") +
-      "\n\nWhat we want built:\n" + val("fM") + "\n\nDummy data: " + (val("fD") || "to follow") + "\n";
+      "\n\nWhat we want built:\n" + val("fM") + "\n\nDummy data: " + ([].slice.call(fileIn.files || []).map(function (f) { return f.name; }).join(", ") || "to follow") + "\n";
   }
   if (FORM_ENDPOINT) note.textContent = "Your request goes straight to the Anvaaya team.";
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     if (!check()) return;
     if (FORM_ENDPOINT) {
+      var files = [].slice.call(fileIn.files || []), total = 0;
+      files.forEach(function (f) { total += f.size; });
+      if (files.length > 5) { say("Attach up to 5 files. Send the rest on WhatsApp or by email."); return; }
+      if (total > 5 * 1024 * 1024) { say("The files come to more than 5 MB. Attach fewer, or email them to info@anvaaya.co.in."); return; }
       var b = document.getElementById("fS"); b.disabled = true; say("Sending your request.");
-      fetch(FORM_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ name: val("fN"), company: val("fC"), email: val("fE"), phone: val("fP"), kind: val("fK"), task: val("fM"), data: val("fD") }) })
-        .then(function (r) { if (!r.ok) throw 0; form.reset(); say("Request sent. We will reply to the email you gave."); })
-        .catch(function () { say("That did not send. Message or call us on the number beside this form."); })
+      var fd = new FormData();
+      fd.append("_subject", "New free-month request: " + val("fN") + (val("fC") ? " (" + val("fC") + ")" : ""));
+      fd.append("_template", "table");
+      fd.append("_captcha", "false");
+      fd.append("_replyto", val("fE"));
+      fd.append("Name", val("fN"));
+      fd.append("Company", val("fC") || "-");
+      fd.append("email", val("fE"));
+      fd.append("Phone", val("fP") || "-");
+      fd.append("Kind of work", val("fK"));
+      fd.append("What they want built", val("fM"));
+      fd.append("Files attached", files.length ? files.map(function (f) { return f.name; }).join(", ") : "none");
+      files.forEach(function (f, i) { fd.append(i ? "attachment" + (i + 1) : "attachment", f, f.name); });
+      fetch(FORM_ENDPOINT, { method: "POST", headers: { "Accept": "application/json" }, body: fd })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) {
+          if (!r.ok || String(j.success) !== "true") throw 0; }); })
+        .then(function () { form.reset(); showFiles(); say("Request sent. We will reply to the email you gave."); })
+        .catch(function () { say("That did not send. Please message us on WhatsApp or email info@anvaaya.co.in."); })
         .then(function () { b.disabled = false; });
       return;
     }
