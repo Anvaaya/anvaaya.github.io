@@ -1,6 +1,29 @@
 <!doctype html>
 <html lang="en">
 <head>
+<!-- Google Analytics (GA4) + click tracking: invisible, no visual change -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3H10D7RMB5"></script>
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());gtag('config','G-3H10D7RMB5');
+(function(){
+ function ev(n,p){try{gtag('event',n,p||{});}catch(e){}}
+ try{if(/[?&]sent=1/.test(location.search))ev('generate_lead',{method:'website_form'});}catch(e){}
+ document.addEventListener('click',function(e){
+  var a=e.target.closest&&e.target.closest('a,button');if(!a)return;
+  var h=(a.getAttribute('href')||''),t=(a.innerText||a.getAttribute('aria-label')||'').trim().slice(0,60);
+  if(/wa\.me\/c\//.test(h))ev('catalogue_click',{link_text:t});
+  else if(/wa\.me\//.test(h))ev('whatsapp_click',{link_text:t});
+  else if(/^mailto:/.test(h))ev('email_click',{link_text:t});
+  else if(/^tel:/.test(h))ev('phone_click',{link_text:t});
+  else if(/sarathi\.html/.test(h))ev('demo_open',{link_text:t});
+  else if(/^#/.test(h))ev('section_nav',{section:h.slice(1),link_text:t});
+  else if(a.tagName==='BUTTON'||/\bbtn\b/.test(a.className||''))ev('cta_click',{link_text:t});
+ },true);
+ document.addEventListener('submit',function(e){if(e.target&&e.target.id==='tf')ev('form_submit',{form_id:'tf'});},true);
+})();
+</script>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Anvaaya | AI, integrations and automation, built on your systems</title>
