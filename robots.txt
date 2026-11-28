@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /walkthroughs.html
+
+Sitemap: https://anvaaya.co.in/sitemap.xml
